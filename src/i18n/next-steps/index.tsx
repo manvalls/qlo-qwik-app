@@ -32,6 +32,7 @@ export const useNextStepsTranslation = () =>
         message: $(() => <></>),
         hint: $(() => <></>),
       },
+      restart: "",
     },
     { es, en }
   );
