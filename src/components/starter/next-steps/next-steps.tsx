@@ -1,37 +1,98 @@
 import { component$, $, useOnWindow, useSignal } from "@builder.io/qwik";
 import styles from "./next-steps.module.css";
-
-export const GETTING_STARTED_STEPS = [
-  {
-    message:
-      "Press and hold the <b>ALT</b> key to activate 'Click-to-Source' mode",
-  },
-  {
-    message:
-      "Select the title of this page while keeping the <b>ALT</b> key pressed",
-    hint: 'Edit the title and save the changes. If your editor does not open, have a look at <a href="https://github.com/yyx990803/launch-editor#supported-editors" target="_blank">this page</a> to set the correct <code>LAUNCH_EDITOR</code> value.',
-  },
-  {
-    message:
-      "<b>Update</b> now the <code>routeLoader$</code> defined in the <code>src/routes/layout.tsx</code> file",
-    hint: "Instead of returning the current date, you could return any possible string.<br />The output is displayed in the footer.",
-  },
-  {
-    message: "Create a <b>new Route</b> called <code>/me</code>",
-    hint: 'Create a new directory called <code>me</code> in <code>src/routes</code>. Within this directory create a <code>index.tsx</code> file or copy the <code>src/routes/index.tsx</code> file. Your new route is now accessible <a href="/me" target="_blank">here</a> ✨',
-  },
-  {
-    message: "Time to have a look at <b>Forms</b>",
-    hint: 'Open <a href="/demo/todolist" target="_blank">the TODO list App</a> and add some items to the list. Try the same with disabled JavaScript 🐰',
-  },
-  {
-    message: "<b>Congratulations!</b> You are now familiar with the basics! 🎉",
-    hint: "If you need further info on how to use qwik, have a look at <a href='https://qwik.builder.io' target='_blank'>qwik.builder.io</a> or join the <a href='https://qwik.builder.io/chat' target='_blank'>Discord channel</a>.",
-  },
-];
+import { useNextStepsTranslation } from "~/i18n/next-steps";
+import { Link } from "qlo";
 
 export default component$(() => {
   const gettingStartedStep = useSignal(0);
+  const t = useNextStepsTranslation();
+
+  const GETTING_STARTED_STEPS = [
+    {
+      message: () =>
+        t.clickToSource.message({
+          bold: (text) => <b>{text}</b>,
+        }),
+    },
+    {
+      message: () =>
+        t.selectTitle.message({
+          bold: (text) => <b>{text}</b>,
+        }),
+      hint: () =>
+        t.selectTitle.hint({
+          supportedEditorsLink: (text) => (
+            <a
+              href="https://github.com/yyx990803/launch-editor#supported-editors"
+              target="_blank"
+            >
+              {text}
+            </a>
+          ),
+          code: (text) => <code>{text}</code>,
+        }),
+    },
+    {
+      message: () =>
+        t.updateRouteLoader.message({
+          bold: (text) => <b>{text}</b>,
+          code: (text) => <code>{text}</code>,
+        }),
+      hint: () =>
+        t.updateRouteLoader.hint({
+          newLine: () => <br />,
+        }),
+    },
+    {
+      message: () =>
+        t.createNewRoute.message({
+          bold: (text) => <b>{text}</b>,
+          code: (text) => <code>{text}</code>,
+        }),
+      hint: () =>
+        t.createNewRoute.hint({
+          code: (text) => <code>{text}</code>,
+          newRouteLink: (text) => (
+            <Link href="/me" target="_blank">
+              {text}
+            </Link>
+          ),
+        }),
+    },
+    {
+      message: () =>
+        t.forms.message({
+          bold: (text) => <b>{text}</b>,
+        }),
+      hint: () =>
+        t.forms.hint({
+          todoListLink: (text) => (
+            <a href="/demo/todolist" target="_blank">
+              {text}
+            </a>
+          ),
+        }),
+    },
+    {
+      message: () =>
+        t.congratulations.message({
+          bold: (text) => <b>{text}</b>,
+        }),
+      hint: () =>
+        t.congratulations.hint({
+          qwikLink: (text) => (
+            <a href="https://qwik.builder.io" target="_blank">
+              {text}
+            </a>
+          ),
+          discordLink: (text) => (
+            <a href="https://qwik.builder.io/chat" target="_blank">
+              {text}
+            </a>
+          ),
+        }),
+    },
+  ];
 
   useOnWindow(
     "keydown",
@@ -39,41 +100,38 @@ export default component$(() => {
       if ((e as KeyboardEvent).key === "Alt") {
         gettingStartedStep.value = 1;
       }
-    }),
+    })
   );
 
   return (
     <div class="container container-purple container-center">
       <h2>
-        Time for a
-        <br />
-        <span class="highlight">qwik intro</span>?
+        {t.title({
+          newLine: () => <br />,
+          highlight: (text) => <span class="highlight">{text}</span>,
+        })}
       </h2>
       <div class={styles.gettingstarted}>
-        <div
-          class={styles.intro}
-          dangerouslySetInnerHTML={
-            GETTING_STARTED_STEPS[gettingStartedStep.value].message
-          }
-        />
-        <span
-          class={styles.hint}
-          dangerouslySetInnerHTML={
-            GETTING_STARTED_STEPS[gettingStartedStep.value].hint
-          }
-        />
+        <div class={styles.intro}>
+          {GETTING_STARTED_STEPS[gettingStartedStep.value].message()}
+        </div>
+        <span class={styles.hint}>
+          {GETTING_STARTED_STEPS[gettingStartedStep.value].hint?.()}
+        </span>
       </div>
       {gettingStartedStep.value + 1 < GETTING_STARTED_STEPS.length ? (
         <button class="button-dark" onClick$={() => gettingStartedStep.value++}>
-          Continue with Step {gettingStartedStep.value + 2} of{" "}
-          {GETTING_STARTED_STEPS.length}
+          {t.continueStep({
+            nextStep: gettingStartedStep.value + 2,
+            totalSteps: GETTING_STARTED_STEPS.length,
+          })}
         </button>
       ) : (
         <button
           class="button-dark"
           onClick$={() => (gettingStartedStep.value = 0)}
         >
-          Re-Start
+          {t.restart}
         </button>
       )}
     </div>

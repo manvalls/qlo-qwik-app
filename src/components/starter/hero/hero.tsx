@@ -1,17 +1,21 @@
 import { component$ } from "@builder.io/qwik";
 import styles from "./hero.module.css";
 import ImgThunder from "~/media/thunder.png?jsx";
+import { useHeroTranslation } from "~/i18n/hero";
 
 export default component$(() => {
+  const t = useHeroTranslation();
+
   return (
     <div class={["container", styles.hero]}>
       <ImgThunder class={styles["hero-image"]} />
       <h1>
-        So <span class="highlight">fantastic</span>
-        <br />
-        to have <span class="highlight">you</span> here
+        {t.welcomeMessage({
+          highlight: (text) => <span class="highlight">{text}</span>,
+          newLine: () => <br />,
+        })}
       </h1>
-      <p>Have fun building your App with Qwik.</p>
+      <p>{t.haveFun}</p>
       <div class={styles["button-group"]}>
         <button
           onClick$={async () => {
@@ -67,14 +71,14 @@ export default component$(() => {
             setTimeout(shoot, 400);
           }}
         >
-          Time to celebrate
+          {t.timeToCelebrate}
         </button>
         <a
           href="https://qwik.builder.io/docs"
           target="_blank"
           class="button button-dark"
         >
-          Explore the docs
+          {t.exploreDocs}
         </a>
       </div>
     </div>

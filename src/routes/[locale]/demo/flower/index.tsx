@@ -4,18 +4,25 @@ import {
   useStore,
   useStylesScoped$,
 } from "@builder.io/qwik";
-import { type DocumentHead, useLocation } from "@builder.io/qwik-city";
+import {
+  type DocumentHead,
+  useLocation,
+  routeLoader$,
+} from "@builder.io/qwik-city";
 import styles from "./flower.css?inline";
+import { loadFlowerHeadTranslation, useFlowerTranslation } from "~/i18n/flower";
 
 export default component$(() => {
   useStylesScoped$(styles);
   const loc = useLocation();
+  const t = useFlowerTranslation();
 
   const state = useStore({
     count: 0,
     number: 20,
   });
 
+  // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(({ cleanup }) => {
     const timeout = setTimeout(() => (state.count = 1), 500);
     cleanup(() => clearTimeout(timeout));
@@ -28,7 +35,9 @@ export default component$(() => {
     <div class="container container-center">
       <div role="presentation" class="ellipsis"></div>
       <h1>
-        <span class="highlight">Generate</span> Flowers
+        {t.generateFlowers({
+          highlight: (text) => <span class="highlight">{text}</span>,
+        })}
       </h1>
 
       <input
@@ -64,6 +73,9 @@ export default component$(() => {
   );
 });
 
-export const head: DocumentHead = {
-  title: "Qwik Flower",
-};
+export const useLoadDocumentHead = routeLoader$((ev) => {
+  return loadFlowerHeadTranslation(ev);
+});
+
+export const head: DocumentHead = ({ resolveValue }) =>
+  resolveValue(useLoadDocumentHead);

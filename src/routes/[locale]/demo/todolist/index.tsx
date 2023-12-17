@@ -8,6 +8,10 @@ import {
   Form,
 } from "@builder.io/qwik-city";
 import styles from "./todolist.module.css";
+import {
+  loadTodoListHeadTranslation,
+  useTodoListTranslation,
+} from "~/i18n/todolist";
 
 interface ListItem {
   text: string;
@@ -28,18 +32,21 @@ export const useAddToListAction = routeAction$(
   },
   zod$({
     text: z.string().trim().min(1),
-  }),
+  })
 );
 
 export default component$(() => {
   const list = useListLoader();
   const action = useAddToListAction();
+  const t = useTodoListTranslation();
 
   return (
     <>
       <div class="container container-center">
         <h1>
-          <span class="highlight">TODO</span> List
+          {t.title({
+            highlight: (text) => <span class="highlight">{text}</span>,
+          })}
         </h1>
       </div>
 
@@ -47,7 +54,7 @@ export default component$(() => {
 
       <div class="container container-center">
         {list.value.length === 0 ? (
-          <span class={styles.empty}>No items found</span>
+          <span class={styles.empty}>{t.noItems}</span>
         ) : (
           <ul class={styles.list}>
             {list.value.map((item, index) => (
@@ -61,18 +68,19 @@ export default component$(() => {
         <Form action={action} spaReset>
           <input type="text" name="text" required class={styles.input} />{" "}
           <button type="submit" class="button-dark">
-            Add item
+            {t.addItem}
           </button>
         </Form>
 
-        <p class={styles.hint}>
-          PS: This little app works even when JavaScript is disabled.
-        </p>
+        <p class={styles.hint}>{t.footer}</p>
       </div>
     </>
   );
 });
 
-export const head: DocumentHead = {
-  title: "Qwik Todo List",
-};
+export const useLoadDocumentHead = routeLoader$((ev) => {
+  return loadTodoListHeadTranslation(ev);
+});
+
+export const head: DocumentHead = ({ resolveValue }) =>
+  resolveValue(useLoadDocumentHead);

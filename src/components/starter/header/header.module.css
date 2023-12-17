@@ -33,7 +33,8 @@
   text-decoration: none;
 }
 
-.header li a:hover {
+.header li a:hover,
+.header li a.selected {
   color: var(--qwik-light-blue);
 }
 
