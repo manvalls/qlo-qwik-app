@@ -39,6 +39,6 @@
     "vite-tsconfig-paths": "^4.2.1"
   },
   "dependencies": {
-    "qlo": "^0.5.0"
+    "qlo": "^0.6.0"
   }
 }
